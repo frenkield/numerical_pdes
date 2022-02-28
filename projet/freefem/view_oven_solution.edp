@@ -1,0 +1,62 @@
+load "msh3"
+include "getARGV.idp"
+load "iovtk"
+
+bool objectInOven = getARGV("-objectInOven", 1);
+mesh3 ovenMesh;
+
+if (objectInOven) {
+    cout << "Chargement du maillage du four avec l'aliment dedans." << endl;
+    ovenMesh = readmesh3("maillages/four_3d.mesh");
+
+} else {
+    cout << "Chargement du maillage du four vide." << endl;
+    ovenMesh = readmesh3("maillages/four_vide_3d.mesh");
+}
+
+fespace Vh(ovenMesh, P1);
+
+// ===========================================================================
+
+Vh<complex> helmholtz;
+
+{
+	ifstream f("visualisation/freefem_helmholtz.txt");
+	for(int k = 0; k < ovenMesh.nt; ++k) {
+        for(int i = 0; i < Vh.ndofK; ++i) {
+            f >> helmholtz[][Vh(k, i)];
+        }
+	}
+}
+
+Vh helmholtzReal = real(helmholtz);
+Vh helmholtzImag = imag(helmholtz);
+
+plot(helmholtzReal, fill=0, cmm="Helmholtz Reel", wait=1, value=true, nbiso=10);
+plot(helmholtzImag, fill=0, cmm="Helmholtz Imaginaire", wait=1, value=true, nbiso=10);
+
+// ===========================================================================
+
+Vh<complex> heat;
+
+{
+	ifstream f("visualisation/freefem_heat.txt");
+	for(int k = 0; k < ovenMesh.nt; ++k) {
+        for(int i = 0; i < Vh.ndofK; ++i) {
+            f >> heat[][Vh(k, i)];
+        }
+	}
+}
+
+Vh heatReal = real(heat);
+plot(heatReal, fill=0, cmm="Temperature", wait=1, value=true, nbiso=10);
+
+// ===========================================================================
+
+cout << "Ecriture des fichiers vtk ParaView" << endl;
+int[int] Order = [1];
+
+savevtk("visualisation/helmholtz_real.vtu", ovenMesh, helmholtzReal, dataname="real", order=Order);
+savevtk("visualisation/helmholtz_imag.vtu", ovenMesh, helmholtzImag, dataname="imag", order=Order);
+savevtk("visualisation/heat.vtu", ovenMesh, heatReal, dataname="temp", order=Order);
+

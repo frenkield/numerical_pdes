@@ -1,0 +1,174 @@
+\section{Le code}
+
+Le code C++ a été développé sous macOS version 10.15.2 avec les outils
+de développement de Xcode version 11.3.1, et l'environnement de
+développement CLion version 2019.3.
+
+La plupart du code C++ a été fournit par Professeur Hecht et fait partie
+du cours 5MM30. Les améliorations principales sont liées à la résolution
+des éléments finis en 3D avec des coefficients complexes (non-constants).
+
+\subsection{Prérequis}
+
+Pour compiler et exécuter le code il faut les outils informatiques
+suivants:
+
+\begin{itemize}
+    \item Compilateur (\verb|g++|)
+    \item \verb|cmake|
+    \item UMFPACK (via SuiteSparse)
+    \item FreeFEM (pour visualiser les résultats)
+\end{itemize}
+
+Pour visualiser les résultats des calculs, le logiciel utilise FreeFEM.
+Si FreeFEM n'est pas disponible, le logiciel échouera à la fin de son
+exécution. Mais avant de se terminer, le logiciel écrit plusieurs fichiers
+contenant des données qui peuvent être utilisés pour générer des
+visualisations.
+
+\subsection{Compilation}
+
+Pour configurer et compiler le code, saisissez les commandes suivantes
+depuis le répertoire racine du projet :
+\begin{verbatim}
+    cmake .
+    cmake --build .
+\end{verbatim}
+
+Si tout se passe bien le logiciel \verb|SolveOven| devrait être présent
+dans le répertoire racine du projet.
+
+\subsubsection{Dépannage}
+
+Si la compilation échoue, il est probable que le compilateur n'arrive
+pas à trouver des fichiers en-tête liés á UMFPACK (\verb|umfpack.h|).
+
+Sous macOS avec SuiteSparse fournit par Homebrew, ces fichiers se trouvent
+normalement sous \\
+\verb|/usr/local/include|. Si ces fichiers se trouvent
+ailleurs sur votre système il faut mettez à jour la ligne $8$ du fichier
+\verb|CMakeLists.txt| :
+\begin{verbatim}
+    ...
+    include_directories(/usr/local/include)
+    ...
+\end{verbatim}
+
+Après avoir changé \verb|CMakeLists.txt| il faut lancer de nouveau les
+2 commandes :
+\begin{verbatim}
+    cmake .
+    cmake --build .
+\end{verbatim}
+
+\subsection{Exécution}
+
+Afin de lancer le logiciel, saisissez la commande suivante depuis le
+répertoire racine du projet :
+\begin{verbatim}
+    ./SolveOven
+\end{verbatim}
+
+\verb|SolveOven| (\verb|src/apps/SolveOven.cpp|) effectue les étapes suivantes :
+\begin{enumerate}
+    \item Résolution du problème de Helmoltz
+    \item Résolution du problème de Poisson
+    \item Génération des fichiers contenant les données des résultats
+    \item Lancement de FreeFEM (le script \verb|freefem/view_oven_solution.edp|)
+\end{enumerate}
+
+\vspace{2mm}
+
+Le script FreeFEM (\verb|freefem/view_oven_solution.edp|) affiche 3 plots au total.
+Pour procéder au prochain plot appuyez sur la touche \verb|entrée|.
+
+\subsection{Scripts FreeFEM}
+Dans le répertoire \verb|freefem| se trouve 3 scripts FreeFEM :
+\begin{enumerate}
+    \item \verb|view_oven_solution.edp| : afficher des plots à partir
+    des données générées par \verb|SolveOven|
+    \item \verb|generate_oven_mesh_3d.edp| : générer un maillage 3D qui
+    consiste en le four (région rectangulaire) et, facultativement, l'aliment
+    à cuire (un sphère)
+    \item \verb|solve_oven_freefem.edp| : résoudre le problème du four avec
+    FreeFEM (pour vérifier la solution C++)
+\end{enumerate}
+
+De plus, le script \verb|view_oven_solution.edp| génère des fichiers de données
+du format VTK pour l'utilisation avec ParaView. La plupart des figures dans ce
+rapport ont été créées avec ParaView à partir de ces fichiers VTK.
+
+\subsection{Fichiers de données}
+Durant l'exécution, le logiciel \verb|SolveOven| et le script
+\verb|view_oven_solution.edp| génèrent des fichiers de données qui sont
+sauvegardés dans le répertoire \verb|visualisation|.
+
+\begin{itemize}
+
+    \item \verb|freefem_helmholtz.txt| contient les valeurs (complexes)
+    de la solution de l'équation de Helmholtz au format convenable pour
+    FreeFEM
+    \item \verb|freefem_heat.txt| contient les valeurs de la solution
+    de l'équation de Poisson au format convenable pour FreeFEM
+
+    \item \verb|helmholtz_real.vtu| contient les valeurs réelles de la solution
+    de l'équation de Helmholtz au format VTK (pour ParaView)
+    \item \verb|helmholtz_imag.vtu| contient les valeurs imaginaires de la
+    solution de l'équation de Helmholtz au format VTK (pour ParaView)
+    \item \verb|heat.vtu| contient les valeurs de la solution de
+    l'équation de Poisson au format VTK (pour ParaView)
+
+    \item \verb|helmholtz.csv| contient les valeurs de la solution de
+    l'équation de Helmholtz au format CSV
+    \item \verb|heat.csv| contient les valeurs de la solution de
+    l'équation de Poisson au format CSV
+
+\end{itemize}
+
+\subsection{Paramètres variables et pointeurs de fonction}
+
+Afin de faciliter le calcul des paramètres variables (par exemple,
+$\epsilon(x)$ et $K(x)$) le code C++ emploie des pointeurs
+de fonction.
+
+Pendant l'assemblage des matrices on calcule la quadrature des
+équations sur chaque simplexe (élément). Cette quadrature requiert
+le calcul des opérations différentielles et aussi le calcul des paramètres
+variables qui apparaissent dans les équations. Chaque opération est
+contenue dans la structure des données \verb|Operation|. Cette
+structure se trouve dans le fichier \verb|include/solver/Solver3D.hpp| :
+
+\begin{verbatim}
+    template<class TypeScalar>
+    struct Operation {
+        function<TypeScalar(Simplex3&)> computeWeight;
+        int operatorU, operatorV;
+    };
+\end{verbatim}
+
+La fonction \verb|computeWeight| est utilisée pendant le processus
+de l'assemblage pour calculer les paramètres variables. Dans le fichier
+\verb|src/apps/SolveOven.cpp|, par exemple, on attribue à
+\verb|computeWeight| la fonction suivante pour calculer la permittivité
+relative :
+
+\begin{verbatim}
+    complex<double> computePermittivity(Simplex3& simplex) {
+        if (inObject(simplex)) {
+            return inversePermittivityObject;
+        }
+        return inversePermittivityAir;
+    }
+\end{verbatim}
+
+En redéfinissant la fonction \verb|inObject()| on peut alors utiliser
+cette méthode pour mettre toute sorte
+d'objet dans le four sans besoin de créer des maillages supplémentaires.
+On peut se servir uniquement du maillage du four vide pour effectuer
+toutes les expériences numériques. Ces objets auront bien sur des
+frontières plutôt irréguliers, mais pour vite tester la cuisson
+de divers objets, c'est une méthode super efficace.
+
+En outre, on peut faire varier partout dans l'enceinte (et l'aliment)
+les valeurs de la permittivité et de la conductivité thermique.
+

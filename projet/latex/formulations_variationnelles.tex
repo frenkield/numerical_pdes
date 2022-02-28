@@ -1,0 +1,132 @@
+\section{Formulations Variationnelles}
+
+Avant de résoudre numériquement ces deux problèmes avec la méthode des
+éléments finis il faut tout d'abord montrer l'existence et l'unicité des solutions.
+
+Pour l'equation de Poisson cette tache se fait plutôt facilement grace au théorème
+de Lax-Milgram. L'equation de Helmholtz, par contre, nécessite un peu plus
+d'attention.
+
+% =============================================================================
+
+\subsection{Équation de Poisson}
+
+Soit $\Omega$ un ouvert borné, $f \in L^2(\Omega)$, $v \in C_0^\infty(\Omega)$,
+et $w \in C_0^\infty(\Omega)$. On multiplie les 2 côtés de l'équation de Poisson
+par $w$ et on les intègre. Cela nous donne
+\[
+    -\into w \nabla \cdot K \nabla v = \into fw
+\]
+
+Comme $v \in C_0^\infty(\Omega)$ et $w \in C_0^\infty(\Omega)$ on peut donc se
+servir d'une formule de Green, ce qui nous amène à
+\[
+    \into K \nabla v \cdot \nabla w
+    - \intob w K \nabla v \cdot n = \into fw
+\]
+
+Par définition $w$ est nulle sur $\partial \Omega$. D'où on en tire
+\[
+    \into K \nabla v \cdot \nabla w = \into fw
+\]
+
+Comme $C_0^\infty(\Omega)$ est dense dans $H_0^1(\Omega)$, on suppose maintenant
+que $u \in H_0^1(\Omega)$. Par passage à la limite on en tire la formulation
+variationnelle suivante :
+\[\begin{dcases}
+    \text{Trouver } v \in H_0^1(\Omega) \text{ telle que} \\
+    a(v, w) = \ell(w) \forall w \in H_0^1(\Omega),
+\end{dcases}\]
+%
+où
+\begin{align}
+    a(v, w) &= \into K \nabla v \cdot \nabla w \\
+    \ell(w) &= \into fw
+\end{align}
+
+La continuité de la forme bilinéaire $a(v, w)$ et de la forme linéaire
+$\ell(w)$ est évidente.
+
+Pour démontrer la coercivité de $a(v, w)$ on note tout d'abord que, par l'inégalite
+de Poincaré, il existe une constante $C > 0$ telle que
+\begin{align}
+    \norme{v}^2_{H^1(\Omega)} \le C \norme{\nabla v}^2_{L^2(\Omega)}
+    \quad \forall v \in H_0^1(\Omega)
+\end{align}
+
+En notant $K_{\min} > 0$ le minimum de $K$, il s'ensuit que
+\begin{align}
+    a(v, v) = \into K \nabla v \cdot \nabla v
+    \ge K_{min} \norme{\nabla v}^2_{L^2(\Omega)}
+    \ge \frac{K_{min}}{C} \norme{v}^2_{H^1(\Omega)}
+\end{align}
+
+On a ainsi montré la coercivité de $a(v, w)$. Donc, d'après le théorème
+de Lax-Milgram, il existe une unique solution du problème variationnelle.
+
+% =============================================================================
+
+\subsection{Équation de Helmholtz}
+
+Afin de montrer l'existence et l'unicité de la solution de l'équation de
+Helmholtz, il faut tout d'abord l'équation reformuler en problème de
+conditions aux limites homogènes.
+
+Pour réaliser cet objectif on étend la fonction $g$ de sorte qu'elle soit
+définie sur tout $\overline \Omega$. On introduit donc la function
+$\tilde{g} \in H^2(\overline \Omega)$, où $\tilde{g}(x) = g(x)$
+pour tout $x \in \partial \Omega$.
+
+Soit maintenant $\ut = u - \tilde{g}$. On a donc
+$\ut = 0$ sur $\partial \Omega$, et notre problème s'écrit
+\[\begin{dcases}
+      \omega^2 \mu \ut + \nabla \cdot \frac{1}{\varepsilon} \nabla \ut =
+      -\omega^2 \mu \tilde{g} - \nabla \cdot \frac{1}{\varepsilon} \nabla \tilde{g} \qquad
+      & \text{dans } \Omega \\
+      \ut = 0 & \text{sur } \partial \Omega
+\end{dcases}\]
+
+Avec $f = -\omega^2 \mu \tilde{g} - \nabla \cdot \frac{1}{\varepsilon} \nabla \tilde{g}$,
+on en tire un problème de conditions aux limites de Dirichlet homogène :
+\[\begin{dcases}
+      \omega^2 \mu \ut + \nabla \cdot \frac{1}{\varepsilon} \nabla \ut = f
+      \qquad & \text{dans } \Omega \\
+      \ut = 0 & \text{sur } \partial \Omega
+\end{dcases}\]
+
+En suivant les mêmes étapes que pour l'equations de Poisson,
+%et on notant que $\frac{\partial \ut}{\partial n} = 0$ sur le bord du domaine,
+on en tire la formulation variationnelle pour l'equation de Helmholtz :
+\[\begin{dcases}
+    \text{Trouver } \ut \in H_0^1(\Omega) \text{ telle que} \\
+    a(\ut, w) = \ell(w) \forall w \in H_0^1(\Omega),
+\end{dcases}\]
+%
+où
+\begin{align}
+    a(\ut, w) &= \omega^2 \mu \into \ut w
+    -\into \frac{1}{\varepsilon} \nabla \ut \cdot \nabla w \\
+    \ell(w) &= \into fw
+\end{align}
+
+La continuité de la forme bilinéaire $a(v, w)$ et de la forme linéaire
+$\ell(w)$ est, comme avant, évidente. Par contre, la coercivité de
+$a(\ut, w)$ s'avére plus compliqué.
+
+En principe, avec une estimation précise de la constante de Poincaré,
+on pourrait imposer des contraintes aux constantes de sorte que $a(\ut, w)$ soit
+coercive. Mais de telles contraintes nous laisserait probablement avec un four
+à micro-ondes qui ne chauffe rien du tout !
+
+% ==========================================================================
+
+Au lieu de s'attaquer à ce problème d'analyse on va raisonner "comme des
+ingénieurs". C'est-á-dire, si la solution numérique se comporte bien, alors
+tout va bien !
+
+Pour un traitement sérieux des questions d'existence et d'unicité
+de l'équation de Helmholtz, et en particulier l'alternative de Fredholm,
+voir les références \cite{fredholm1}, \cite{fredholm2}, \cite{fredholm3},
+\cite{fredholm4}, \cite{fredholm5}, \cite{fredholm6}, et \cite{fredholm7}.
+
+

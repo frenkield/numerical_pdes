@@ -1,0 +1,38 @@
+load "msh3"
+load "TetGen"
+load "medit"
+include "MeshSurface.idp"
+
+bool objectInOven = true;
+meshS ovenMesh;
+
+int[int] N = [20, 10, 10];
+real [int,int] B = [[-20, 20], [-15, 15], [-15, 15]];
+int [int,int] L = [[1, 2], [3, 4], [5, 6]];
+
+meshS containerMesh = SurfaceHex(N, B, L, 1);
+
+// densité des tétraèdres
+real tetrahedronDensity = 3;
+
+if (objectInOven) {
+    meshS ThS = Sphere(8, tetrahedronDensity, 7, 1);
+    ovenMesh = containerMesh + ThS;
+
+} else {
+    ovenMesh = containerMesh;
+}
+
+real voltet = (tetrahedronDensity^3) / 6.0;
+
+// label 1 pour la sphere, 2 pour le reste
+real[int] domain = [0, 0, 0, 1, voltet, 0, 0, 11, 2, voltet];
+
+mesh3 Th = tetg(ovenMesh, switch="pqaAAYYQ", nbofregions=2, regionlist=domain);
+medit("Four a micro-ondes", Th);
+
+if (objectInOven) {
+    savemesh(Th, "maillages/four_3d.mesh");
+} else {
+    savemesh(Th, "maillages/four_vide_3d.mesh");
+}

@@ -1,0 +1,64 @@
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{babel}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage[center]{caption}
+
+\usepackage[scaled=0.8]{beramono}
+\usepackage{subcaption}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\newcommand{\var}[1]{{\ttfamily#1}}% variable
+
+\usepackage{makecell}
+\usepackage{xcolor}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks = true,
+    linkcolor=[rgb]{0.902, 0.208, 0.169},
+    urlcolor=[rgb]{0.902, 0.208, 0.169},
+    citecolor=[rgb]{0.902, 0.208, 0.169}
+}
+
+% =============================================
+
+%\renewcommand{\UrlFont}{\ttfamily\small}
+
+\mathtoolsset{showonlyrefs}
+\numberwithin{equation}{subsection}
+\captionsetup[subfigure]{labelformat=empty}
+
+\renewcommand{\epsilon}{\varepsilon}
+
+\newcommand{\nus}{\nu \hspace{1pt}}
+\newcommand{\implique}{\Longrightarrow \quad}
+\newcommand{\norme}[1]{\| #1 \|}
+\newcommand{\normeLtwo}[1]{\norme{#1}_{L^2(\mathbb{R})}}
+
+\DeclareMathOperator{\Imag}{Im}
+\DeclareMathOperator{\Reel}{Re}
+
+\let\oldforall\forall
+\renewcommand{\forall}{\ \oldforall}
+
+
+\newcommand{\et}{\text{ et }}
+\newcommand{\ou}{\text{ ou }}
+
+\newcommand{\algdistA}[2]{\scriptstyle \vec A_{#1 #2}}
+\newcommand{\algdistO}[1]{\scriptstyle \vec \Omega_#1}
+
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\newcommand{\ut}{\tilde{u}}
+\newcommand{\into}{\int_\Omega}
+\newcommand{\intob}{\int_{\partial \Omega}}
+

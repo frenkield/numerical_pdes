@@ -1,0 +1,41 @@
+\section{Éléments finis (complexes)}
+
+Afin de résoudre numériquement les problèmes de Helmholtz et Poisson
+on se sert de la méthode des éléments finis et la méthode de Galerkine.
+On emploie l'espace des fonctions $\mathbb{P}_1$-Lagrange comme
+fonctions de forme, et, les problèmes étant en 3D, des tétraèdres comme
+éléments. On cherche alors une solution approchée dans l'espace donné
+par
+\begin{align}
+    V_h = \{v \in C^0(\Omega), v|_\tau \in \mathbb{P}_1(\tau)
+            \forall \tau \in T_h \},
+\end{align}
+%
+où $T_h$ est l'ensemble de tétraèdres du maillage.
+
+Soit maintenant $\mathcal{S}_h$ l'ensemble des sommets du maillage et
+$\{\phi_s, s \in \mathcal{S}_h\}$ une base de $V_h$ telle que
+\[\phi_s(s') =
+    \begin{dcases}
+        1 \text{ si } s = s' \\
+        0 \text{ sinon}
+    \end{dcases}
+\]
+
+Étant à valeurs complexes, la solution de l'equation de Helmholtz s'écrit
+alors
+\begin{align}
+    u_h(x) = \sum_{s \in \mathcal{S}_h} u_s \phi_s(x) \qquad u_s \in \mathbb{C}
+\end{align}
+
+Par contre, la solution de l'équation de Poisson est à valeurs réelles.
+Sa solution s'écrit donc
+\begin{align}
+    v_h(x) = \sum_{s \in \mathcal{S}_h} v_s \phi_s(x) \qquad v_s \in \mathbb{R}
+\end{align}
+
+\textbf{Remarque} \quad La solution de l'équation de Helmholtz est à valeurs
+complexes mais on n'a pas besoin des fonctions de forme complexes
+(cf.~\cite{hecht_elements_finis}). Pourtant, il faut introduire quelque part
+des paramètres complexes pour faire en sorte que la solution soit complexe.
+On va alors convertir la permittivité relative $\epsilon$ en valeur complexe.

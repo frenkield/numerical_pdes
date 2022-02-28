@@ -1,0 +1,116 @@
+load "msh3"
+include "getARGV.idp"
+
+bool objectInOven = true;
+string meshFilename;
+
+if (objectInOven) {
+    cout << "Chargement du maillage du four avec l'aliment dedans." << endl;
+    meshFilename = "maillages/four_3d.mesh";
+
+} else {
+    cout << "Chargement du maillage du four vide." << endl;
+    meshFilename = "maillages/four_vide_3d.mesh";
+}
+
+cout << "Lecture de " << meshFilename << endl;;
+mesh3 ovenMesh = readmesh3(meshFilename);
+
+// ======================= toutes les constantes =========================
+
+real wavelengthCount = 1.85;
+
+// TODO - calculer la longueur
+int ovenLength = 40; // helmholtzSolver.mesh->maximum.x - helmholtzSolver.mesh->minimum.x;
+
+real angularFrequency = wavelengthCount * 2.0 * pi / ovenLength;
+real angularFrequencySquared = angularFrequency * angularFrequency;
+
+complex permittivityAir = -1.0 + 0.05i;  //  {-1.0, 0.05};
+complex inversePermittivityAir = 1.0 / permittivityAir;
+complex inversePermittivityObject = inversePermittivityAir * 0.25;
+
+real borderMagnitude = 1.0;
+real thermalConductivityAir = 0.0262;
+real thermalConductivityObject = 0.6;
+
+real radiusSphereSquared = 61.0;
+
+// =================== calulateurs des non-constantes =====================
+
+func bool inObject(real x, real y, real z) {
+
+    if (objectInOven) {
+        real normSquared = x*x + y*y + z*z;
+        return normSquared <= radiusSphereSquared;
+    }
+
+    return false;
+}
+
+func complex computePermittivity(real x, real y, real z) {
+
+    if (inObject(x, y, z)) {
+        return inversePermittivityObject;
+    }
+
+    return inversePermittivityAir;
+}
+
+func real computeThermalConductivity(real x, real y, real z) {
+
+    if (inObject(x, y, z)) {
+        return thermalConductivityObject;
+    }
+
+    return thermalConductivityAir;
+}
+
+func real computeBoundaryValuePyramid(real x, real y, real z) {
+
+    // TODO - utiliser la taille du maillage
+    real normalizedY = (y + 15) / 30;
+    real normalizedZ = (z + 15) / 30;
+
+    real slope = 4;
+
+    real value = min(slope * normalizedZ, slope * normalizedY,
+                     slope * (1 - normalizedZ), slope * (1 - normalizedY));
+
+    value = min(value, 1.0);
+    real boundaryValue = value * borderMagnitude;
+
+    return boundaryValue;
+}
+
+// ============================= helmholtz ===============================
+
+fespace Vh(ovenMesh, P1);
+Vh<complex> u, v;
+
+solve helmholtz(u, v) =
+    int3d(ovenMesh)(u * v * angularFrequencySquared
+                    + (dx(u) * dx(v) + dy(u) * dy(v) + dz(u) * dz(v)) * computePermittivity(x, y, z))
+    + on(2, 3, 4, 5, 6, u=0)
+    + on(1, u=computeBoundaryValuePyramid(x, y, z));
+
+Vh ur = real(u);
+Vh ui = imag(u);
+
+plot(ur, fill=0, cmm="Helmholtz Reel", wait=1, value=true, nbiso=10);
+plot(ui, fill=0, cmm="Helmholtz Imaginaire", wait=1, value=true, nbiso=10);
+
+// =============================== poisson ==============================
+
+fespace Uh(ovenMesh, P1);
+Uh uHeat, vHeat, rightHandSide;
+
+rightHandSide = (ur^2 + ui^2) / 500;
+
+solve temperature(uHeat, vHeat) =
+    int3d(ovenMesh) ((dx(uHeat) * dx(vHeat) + dy(uHeat) * dy(vHeat) + dz(uHeat) * dz(vHeat))
+                     * computeThermalConductivity(x, y, z))
+    - int3d(ovenMesh) (rightHandSide * vHeat)
+    + on(1, 2, 3, 4, 5, 6, uHeat=0);
+
+plot(uHeat, fill=0, cmm="Temperature", wait=1, value=true, nbiso=10);

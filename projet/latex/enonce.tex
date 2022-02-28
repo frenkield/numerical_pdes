@@ -1,0 +1,88 @@
+\section{Énoncé}
+
+Le but de ce projet est de simuler (de manière simplifiée) le chauffage d'un
+objet (un aliment) par un four à micro-ondes en trois dimensions avec la
+méthode des éléments finis.
+
+Ce problème se résout en deux étapes. Tout d'abord, on résout l'équation de Helmoltz
+afin de déterminer la magnitude du champ électromagnétique dans l'enceinte du four.
+Ensuite, avec les données de cette magnitude, on résout l'équation de Poisson à
+coefficients variables afin de déterminer la température de l'objet, et la température
+de l'air qui entoure l'objet dans le four à micro-ondes.
+
+% =============================================================================
+
+\subsection{Le problème de Helmholtz}
+
+Soit $\Omega \subset \mathbb{R}^3$ le domaine à l'intérieur du four.
+Le problème de Helmholtz s'écrit alors comme suit :
+
+Trouver $u$ une fonction définit sur l'ouvert $\Omega$ à valeurs dans $\mathbb{C}$
+tel que
+\[\begin{dcases}
+    \omega^2 \mu u + \nabla \cdot \frac{1}{\varepsilon} \nabla u = 0 \qquad
+    & \text{dans } \Omega \\
+    u = g, \ \frac{\partial u}{\partial n} = 0 & \text{sur } \partial \Omega
+\end{dcases}\]
+
+%$\epsilon = 1$ dans l'air et $\epsilon = 4$ dans l'objet à cuire, et $g$ est
+%une fonction qui modélise l'antenne du four. On suppose aussi que $\omega = 1$ et que
+%$\mu \in \mathbb{C}$.
+
+% TODO - mu et epsilon sont plutot des fonctions - ou ca ce fait plus tard........
+
+où, pour $x \in \Omega$ et $\tilde{x} \in \partial\Omega$,
+
+\begin{itemize}
+
+    \item $u(x)$ est une fonction à valeurs complexes qui représente l'amplitude
+    du champ électromagnétique.
+
+    \item $\omega > 0$ est la vitesse angulaire des ondes électromagnétique émis
+    par l'antenne (magnétron) du four.
+
+    \item $\mu > 0$ est la perméabilité magnétique relative, qui
+    caractérise la résistance d'un milieu à la création d'un champ magnétique.
+
+    \item $\epsilon(x)$ est la (éventuellement complexe) permittivité relative,
+    qui caractérise la polarisabilité d'un milieu sous l'effet d'un champ électrique.
+
+    \item $g(\tilde{x})$ est une fonction qui représente l'antenne (magnétron), qui est
+    la source du champ électromagnétique. Dans un four à micro-ondes l'antenne
+    se trouve à l'extériur de l'enceinte, et donc on peut modéliser l'antenne
+    comme une condition aus limites restreint à la paroi de l'enceinte.
+
+%    \item $g : \partial \Omega \rightarrow \mathbb{R}$ est une fonction qui
+%    représente la
+
+\end{itemize}
+
+% =============================================================================
+
+\subsection{Le problème de Poisson à coefficients variables}
+
+L'équation de Poisson s'écrit comme suit :
+
+Trouver $v$ une fonction définit sur l'ouvert $\Omega$ à valeurs dans $\mathbb{R}$
+tel que
+\[\begin{dcases}
+      -\nabla \cdot K \nabla v = f \qquad & \text{dans } \Omega \\
+      v = 0 & \text{sur } \partial \Omega
+\end{dcases}\]
+
+où, pour $x \in \Omega$,
+
+\begin{itemize}
+
+    \item $v(x)$ est une fonction à valeurs réelles qui représente la température
+    de l'air à l'intérieur de l'enceinte et la température de l'objet à cuire.
+
+    \item $K(x) > 0$ est la conductivité thermique, qui caractérise le degré de
+    transfert de chaleur dans un milieu.
+
+    \item $f(x)$ est la source de chaleur. Pour modéliser le four
+    à micro-onde on pose que la puissance de cette source est égale à la
+    magnitude (au carré) du champ magnétique : $f = u \overline{u}$,
+    où $u$ est la solution de l'équation de Helmholtz.
+
+\end{itemize}

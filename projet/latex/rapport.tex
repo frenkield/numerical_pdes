@@ -1,0 +1,34 @@
+\documentclass[french, 11pt, a4paper]{article}
+
+\input{preambule.tex}
+\begin{document}
+
+\renewcommand{\labelitemi}{$\bullet$}
+
+\input{entete.tex}
+
+\tableofcontents
+
+\newpage
+\input{enonce.tex}
+
+\input{formulations_variationnelles.tex}
+
+\input{elements_finis.tex}
+
+\input{experiences_numeriques.tex}
+
+\input{maillage.tex}
+
+\input{visualisations_helmholtz.tex}
+\input{visualisations_chaleur.tex}
+\input{visualisations_reflexion.tex}
+
+\input{code.tex}
+
+\newpage
+\input{bibliographie.tex}
+
+%$ % une petite erreur intentionnelle pour empêcher intellij d'exécuter bibtex
+
+\end{document}

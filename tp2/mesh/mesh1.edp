@@ -1,0 +1,7 @@
+mesh m1 = square(10,10);
+
+
+plot(m1, wait=1);
+
+
+savemesh(m1, "mesh1.msh");
