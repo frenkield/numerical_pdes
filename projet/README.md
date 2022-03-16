@@ -4,11 +4,9 @@ développement CLion version 2019.3.
 
 La plupart du code C++ a été fournit par Professeur Hecht et fait partie
 du cours 5MM30. Les améliorations principales sont liées à la résolution
-des éléments finis en 3D avec des coefficients complexes (non-constants).
+des éléments finis en 3D avec des coefficients complexes (non-constante).
 
-=========================================================================
-Prérequis
-=========================================================================
+# Prérequis
 
 Pour compiler et exécuter le code il faut les outils informatiques
 suivants :
@@ -24,9 +22,7 @@ exécution. Mais avant de se terminer, le logiciel écrit plusieurs fichiers
 contenant des données qui peuvent être utilisés pour générer des
 visualisations.
 
-=========================================================================
-Compilation
-=========================================================================
+# Compilation
 
 Pour configurer et compiler le code, saisissez les commandes suivantes
 depuis le répertoire racine du projet :
@@ -37,9 +33,7 @@ depuis le répertoire racine du projet :
 Si tout se passe bien le logiciel SolveOven devrait être présent
 dans le répertoire racine du projet.
 
-=========================================================================
-Dépannage
-=========================================================================
+# Dépannage
 
 Si la compilation échoue, il est probable que le compilateur n'arrive
 pas à trouver des fichiers en-tête liés á UMFPACK (umfpack.h).
@@ -59,9 +53,7 @@ Après avoir changé CMakeLists.txt il faut lancer de nouveau les
     cmake .
     cmake --build .
 
-=========================================================================
-Exécution
-=========================================================================
+# Exécution
 
 Afin de lancer le logiciel, saisissez la commande suivante depuis le
 répertoire racine du projet :
@@ -79,9 +71,7 @@ SolveOven (src/apps/SolveOven.cpp) effectue les étapes suivantes :
 Le script FreeFEM (freefem/view_oven_solution.edp) affiche 3 plots au total.
 Pour procéder au prochain plot appuyez sur la touche entrée.
 
-=========================================================================
-Scripts FreeFEM
-=========================================================================
+# Scripts FreeFEM
 
 Dans le répertoire freefem se trouve 3 scripts FreeFEM :
 
@@ -97,9 +87,7 @@ De plus, le script view_oven_solution.edp génère des fichiers de données
 du format VTK pour l'utilisation avec ParaView. La plupart des figures dans ce
 rapport ont été créées avec ParaView à partir de ces fichiers VTK.
 
-=========================================================================
-Fichiers de données
-=========================================================================
+# Fichiers de données
 
 Durant l'exécution, le logiciel SolveOven et le script
 view_oven_solution.edp génèrent des fichiers de données qui sont
@@ -127,9 +115,7 @@ sauvegardés dans le répertoire visualisation.
     heat.csv contient les valeurs de la solution de
     l'équation de Poisson au format CSV
 
-=========================================================================
-Paramètres variables et pointeurs de fonction
-=========================================================================
+# Paramètres variables et pointeurs de fonction
 
 Afin de faciliter le calcul des paramètres variables (par exemple,
 epsilon(x) et K(x)) le code C++ emploie des pointeurs
